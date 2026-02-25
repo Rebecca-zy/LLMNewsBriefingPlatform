@@ -331,34 +331,6 @@ const triggerGenerate = async () => {
   }
 };
 
-const triggerPush = async () => {
-  if (!currentBriefingId) {
-    setStatus("请先生成或选择一条简报再推送。");
-    return;
-  }
-
-  pushBtn.disabled = true;
-  setStatus(`正在推送简报 ${currentBriefingId} 到企业微信...`);
-  try {
-    const webhook = (webhookEl.value || "").trim();
-    const res = await fetch(`/api/push/${encodeURIComponent(currentBriefingId)}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ webhook }),
-    });
-    const payload = await res.json();
-    if (!res.ok) {
-      setStatus(`推送失败: ${payload.error || "unknown"}`);
-      return;
-    }
-    setStatus(`推送成功 · ${JSON.stringify(payload.result)}`);
-  } catch (error) {
-    setStatus(`推送异常: ${error.message}`);
-  } finally {
-    pushBtn.disabled = false;
-  }
-};
-
 const summarizeIntro = (text) => {
   const normalized = String(text || "").replace(/\s+/g, " ").trim();
   if (!normalized) return "";
@@ -366,10 +338,9 @@ const summarizeIntro = (text) => {
   return sentence.slice(0, 80);
 };
 
-const triggerSummary = () => {
+const buildSummaryText = () => {
   if (!currentBriefing || !Array.isArray(currentBriefing.items) || currentBriefing.items.length === 0) {
-    setStatus("请先生成或选择一条简报再生成摘要。");
-    return;
+    return "";
   }
 
   const lines = currentBriefing.items
@@ -380,14 +351,57 @@ const triggerSummary = () => {
     })
     .filter(Boolean);
 
-  const summary =
-    lines.length > 0
-      ? `本期共 ${lines.length} 条热点，核心信息如下：${lines.join("；")}。`
-      : "当前热点条目缺少可用简介，无法生成汇总摘要。";
+  return lines.length > 0 ? `本期共 ${lines.length} 条热点，核心信息如下：${lines.join("；")}。` : "";
+};
+
+const triggerPush = async () => {
+  if (!currentBriefingId) {
+    setStatus("请先生成或选择一条简报再推送。");
+    return;
+  }
+
+  const summary = buildSummaryText();
+  if (!summary) {
+    setStatus("当前简报缺少可用简介，无法生成摘要并推送。");
+    return;
+  }
+
+  // 点击推送时，优先将“生成摘要”文案推送到企业微信
+  summaryTextEl.textContent = summary;
+  summaryPanelEl.style.display = "block";
+
+  pushBtn.disabled = true;
+  setStatus(`正在推送摘要 ${currentBriefingId} 到企业微信...`);
+  try {
+    const webhook = (webhookEl.value || "").trim();
+    const res = await fetch(`/api/push/${encodeURIComponent(currentBriefingId)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ webhook, summary }),
+    });
+    const payload = await res.json();
+    if (!res.ok) {
+      setStatus(`推送失败: ${payload.error || "unknown"}`);
+      return;
+    }
+    setStatus(`推送成功 · 已发送摘要到企业微信`);
+  } catch (error) {
+    setStatus(`推送异常: ${error.message}`);
+  } finally {
+    pushBtn.disabled = false;
+  }
+};
+
+const triggerSummary = () => {
+  const summary = buildSummaryText();
+  if (!summary) {
+    setStatus("请先生成或选择一条简报，再生成摘要。");
+    return;
+  }
 
   summaryTextEl.textContent = summary;
   summaryPanelEl.style.display = "block";
-  setStatus("已生成汇总摘要。可继续更新简报后重新生成。");
+  setStatus("已生成汇总摘要。点击“订阅企业微信推送”会发送该摘要。");
 };
 
 const triggerShare = async () => {
