@@ -37,6 +37,26 @@ const readBody = (req) =>
     req.on("error", reject);
   });
 
+const summarizeIntro = (text) => {
+  const normalized = String(text || "").replace(/\s+/g, " ").trim();
+  if (!normalized) return "";
+  const sentence = normalized.split(/[。！？!?.]/)[0] || normalized;
+  return sentence.slice(0, 80);
+};
+
+const buildSummaryFromBriefing = (briefingJson) => {
+  const items = Array.isArray(briefingJson?.items) ? briefingJson.items : [];
+  const lines = items
+    .map((item, idx) => {
+      const intro = item.introZh || item.summary || item.introEn || "";
+      const oneLine = summarizeIntro(intro);
+      return oneLine ? `${idx + 1}. ${oneLine}` : "";
+    })
+    .filter(Boolean);
+
+  return lines.length > 0 ? `本期共 ${lines.length} 条热点，核心信息如下：${lines.join("；")}。` : "";
+};
+
 const server = http.createServer(async (req, res) => {
   const method = req.method || "GET";
   const parsedUrl = new URL(req.url || "/", `http://${HOST}:${PORT}`);
@@ -94,9 +114,13 @@ const server = http.createServer(async (req, res) => {
       const payload = rawBody ? JSON.parse(rawBody) : {};
       const webhookUrl = payload.webhook || process.env.WECHAT_WORK_WEBHOOK;
 
+      // 始终优先推送“摘要文案”，前端没传也由后端自动生成，避免回落到旧模板
+      const summaryText =
+        (payload.summary && String(payload.summary).trim()) || buildSummaryFromBriefing(existed.json);
+
       let result;
-      if (payload.summary && String(payload.summary).trim()) {
-        result = await pushSummaryToWecom(webhookUrl, existed.json, payload.summary);
+      if (summaryText) {
+        result = await pushSummaryToWecom(webhookUrl, existed.json, summaryText);
       } else {
         result = await pushBriefingToWecom(webhookUrl, existed.json);
       }
