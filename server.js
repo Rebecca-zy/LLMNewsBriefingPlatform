@@ -40,7 +40,8 @@ const readBody = (req) =>
 const summarizeIntro = (text) => {
   const normalized = String(text || "").replace(/\s+/g, " ").trim();
   if (!normalized) return "";
-  const sentence = normalized.split(/[。！？!?.]/)[0] || normalized;
+  // 避免把 1.5 这类小数按句号截断
+  const sentence = normalized.split(/[。！？!?]/)[0] || normalized;
   return sentence.slice(0, 80);
 };
 
