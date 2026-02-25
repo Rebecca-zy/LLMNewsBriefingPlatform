@@ -54,7 +54,7 @@ const buildSummaryFromBriefing = (briefingJson) => {
     })
     .filter(Boolean);
 
-  return lines.length > 0 ? `本期共 ${lines.length} 条热点，核心信息如下：${lines.join("；")}。` : "";
+  return lines.length > 0 ? `本期共 ${lines.length} 条热点：\n\n${lines.join("\n\n")}` : "";
 };
 
 const server = http.createServer(async (req, res) => {
