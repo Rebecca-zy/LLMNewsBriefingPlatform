@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI HotPulse · 简报详情</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page">
+      <section class="topbar card-soft">
+        <div class="brand"><span>AI</span> HotPulse · 简报详情</div>
+        <div class="auto-update"><span class="dot"></span> 每3小时自动更新</div>
+      </section>
+
+      <section class="hero card-main">
+        <h1 id="briefingTitle">AI热点简报</h1>
+        <div class="meta-chips">
+          <span id="metaUpdated" class="chip">更新时间 --</span>
+          <span class="chip">来源：公开 RSS 聚合</span>
+          <span class="chip">触达：企业微信</span>
+        </div>
+        <div class="trend-block">
+          <div class="trend-label">TREND SNAPSHOT</div>
+          <div id="trendText" class="trend-text">等待生成趋势摘要…</div>
+        </div>
+        <div class="action-row">
+          <button id="pushBtn" class="btn btn-primary">订阅企业微信推送</button>
+          <button id="generateBtn" class="btn">更新简报</button>
+          <button id="summaryBtn" class="btn" type="button">生成摘要</button>
+          <button id="shareBtn" class="btn" type="button">分享链接</button>
+        </div>
+        <div class="util-row">
+          <label for="maxItems">条数</label>
+          <input id="maxItems" type="number" min="3" max="15" value="8" />
+          <label for="webhook">Webhook/Key</label>
+          <input
+            id="webhook"
+            class="webhook-input"
+            type="text"
+            placeholder="可填完整 URL 或仅填机器人 key（可选）"
+          />
+        </div>
+        <pre id="status" class="status">等待触发…</pre>
+      </section>
+
+      <section class="list-card card-main">
+        <div class="list-header">
+          <h2>热点条目</h2>
+          <div id="briefingList" class="list"></div>
+        </div>
+
+        <section id="summaryPanel" class="summary-panel" style="display: none">
+          <h3>汇总摘要</h3>
+          <p id="summaryText"></p>
+        </section>
+
+        <article id="briefingContent" class="content">请选择或先生成一条简报。</article>
+
+        <p class="foot-note">简报按时间倒序展示，每3小时自动更新一次。</p>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

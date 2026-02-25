@@ -392,6 +392,27 @@ body {
   color: #47618f;
 }
 
+.summary-panel {
+  margin: 10px 0 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #f4f8ff;
+  border: 1px solid #d7e3ff;
+}
+
+.summary-panel h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  color: #1c3c76;
+}
+
+.summary-panel p {
+  margin: 0;
+  font-size: 14px;
+  color: #304f86;
+  line-height: 1.7;
+}
+
 .foot-note {
   margin: 6px 0 0;
   padding-top: 12px;

@@ -9,8 +9,12 @@ const briefingTitleEl = document.getElementById("briefingTitle");
 const metaUpdatedEl = document.getElementById("metaUpdated");
 const trendTextEl = document.getElementById("trendText");
 const shareBtn = document.getElementById("shareBtn");
+const summaryBtn = document.getElementById("summaryBtn");
+const summaryPanelEl = document.getElementById("summaryPanel");
+const summaryTextEl = document.getElementById("summaryText");
 
 let currentBriefingId = null;
+let currentBriefing = null;
 
 const escapeHtml = (text) =>
   String(text || "")
@@ -204,6 +208,9 @@ const renderHistoryPicker = (versions, dateKey) => {
 
 const renderBriefing = (briefing) => {
   currentBriefingId = briefing.id || currentBriefingId;
+  currentBriefing = briefing;
+  summaryPanelEl.style.display = "none";
+  summaryTextEl.textContent = "";
   const generatedAt = briefing.generatedAt ? new Date(briefing.generatedAt).toLocaleString() : "--";
 
   metaUpdatedEl.textContent = `更新时间 ${generatedAt}`;
@@ -352,6 +359,37 @@ const triggerPush = async () => {
   }
 };
 
+const summarizeIntro = (text) => {
+  const normalized = String(text || "").replace(/\s+/g, " ").trim();
+  if (!normalized) return "";
+  const sentence = normalized.split(/[。！？!?.]/)[0] || normalized;
+  return sentence.slice(0, 80);
+};
+
+const triggerSummary = () => {
+  if (!currentBriefing || !Array.isArray(currentBriefing.items) || currentBriefing.items.length === 0) {
+    setStatus("请先生成或选择一条简报再生成摘要。");
+    return;
+  }
+
+  const lines = currentBriefing.items
+    .map((item, idx) => {
+      const intro = item.introZh || item.summary || item.introEn || "";
+      const oneLine = summarizeIntro(intro);
+      return oneLine ? `${idx + 1}. ${oneLine}` : "";
+    })
+    .filter(Boolean);
+
+  const summary =
+    lines.length > 0
+      ? `本期共 ${lines.length} 条热点，核心信息如下：${lines.join("；")}。`
+      : "当前热点条目缺少可用简介，无法生成汇总摘要。";
+
+  summaryTextEl.textContent = summary;
+  summaryPanelEl.style.display = "block";
+  setStatus("已生成汇总摘要。可继续更新简报后重新生成。");
+};
+
 const triggerShare = async () => {
   const url = window.location.href;
   try {
@@ -364,5 +402,6 @@ const triggerShare = async () => {
 
 generateBtn.addEventListener("click", triggerGenerate);
 pushBtn.addEventListener("click", triggerPush);
+summaryBtn.addEventListener("click", triggerSummary);
 shareBtn.addEventListener("click", triggerShare);
 refreshList();
