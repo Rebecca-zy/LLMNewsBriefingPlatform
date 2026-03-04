@@ -1,0 +1,13 @@
+{
+  "name": "llm-news-briefing-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Manual-trigger LLM news briefing platform",
+  "scripts": {
+    "start": "node server.js",
+    "generate": "node cli.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

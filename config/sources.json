@@ -1,0 +1,86 @@
+[
+  {
+    "name": "Google News - OpenAI",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=OpenAI+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "模型发布",
+    "priority": 1
+  },
+  {
+    "name": "Google News - Anthropic",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=Anthropic+Claude+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "模型发布",
+    "priority": 0.97
+  },
+  {
+    "name": "Google News - Gemini",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=Google+Gemini+AI+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "模型发布",
+    "priority": 0.95
+  },
+  {
+    "name": "Google News - AI Industry",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=artificial+intelligence+industry+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "行业动态",
+    "priority": 0.9
+  },
+  {
+    "name": "Google News - AI Funding",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=AI+startup+funding+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "行业动态",
+    "priority": 0.87
+  },
+  {
+    "name": "Google News - AWS AI",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=AWS+AI+Bedrock+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "产品更新",
+    "priority": 0.86
+  },
+  {
+    "name": "Google News - NVIDIA AI",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=NVIDIA+AI+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "行业动态",
+    "priority": 0.85
+  },
+  {
+    "name": "Google News - Microsoft AI",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=Microsoft+Copilot+AI+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "模型发布",
+    "priority": 0.84
+  },
+  {
+    "name": "Google News - AI Product Updates",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=AI+product+launch+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "产品更新",
+    "priority": 0.84
+  },
+  {
+    "name": "Google News - Data & AI Platform",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=Databricks+Snowflake+AI+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "行业动态",
+    "priority": 0.82
+  },
+  {
+    "name": "Google News - arXiv AI Papers",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=arXiv+AI+paper+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "模型发布",
+    "priority": 0.76
+  },
+  {
+    "name": "Google News - NLP Papers",
+    "type": "rss",
+    "url": "https://news.google.com/rss/search?q=arXiv+NLP+LLM+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "category": "模型发布",
+    "priority": 0.74
+  }
+]

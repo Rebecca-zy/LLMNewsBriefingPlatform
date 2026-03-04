@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI热点推送系统 - 对外展示UI稿</title>
+    <style>
+      :root {
+        --bg: #060a18;
+        --bg-2: #0b1430;
+        --panel: rgba(14, 24, 52, 0.72);
+        --line: rgba(112, 146, 255, 0.28);
+        --text: #e6eeff;
+        --muted: #93a8d8;
+        --c1: #4de7ff;
+        --c2: #7f70ff;
+        --ok: #4dffbf;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Sora", "PingFang SC", "Noto Sans SC", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(1200px 500px at 15% -10%, rgba(77,231,255,0.16), transparent 60%),
+          radial-gradient(900px 400px at 90% 0%, rgba(127,112,255,0.2), transparent 65%),
+          linear-gradient(170deg, var(--bg), var(--bg-2));
+      }
+
+      .wrap { max-width: 1200px; margin: 0 auto; padding: 18px; }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px 14px;
+        background: rgba(10, 18, 40, 0.65);
+        backdrop-filter: blur(8px);
+      }
+      .brand { font-weight: 700; letter-spacing: 0.2px; }
+      .brand span { color: var(--c1); }
+      .nav .links { display: flex; gap: 16px; color: var(--muted); font-size: 13px; }
+      .nav .btn {
+        border: 1px solid rgba(77,231,255,0.45);
+        border-radius: 999px;
+        padding: 7px 12px;
+        color: var(--c1);
+        font-size: 12px;
+      }
+
+      .hero {
+        margin-top: 14px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 28px;
+        background:
+          linear-gradient(135deg, rgba(13,24,56,0.92), rgba(11,17,40,0.88));
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        width: 420px;
+        height: 420px;
+        right: -120px;
+        top: -160px;
+        background: radial-gradient(circle, rgba(77,231,255,0.28), transparent 66%);
+        pointer-events: none;
+      }
+      .hero h1 {
+        margin: 0;
+        font-size: 40px;
+        line-height: 1.15;
+        max-width: 760px;
+      }
+      .hero h1 .glow { color: var(--c1); text-shadow: 0 0 20px rgba(77,231,255,0.35); }
+      .hero p {
+        margin: 14px 0 0;
+        max-width: 760px;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.65;
+      }
+      .hero-actions { display: flex; gap: 10px; margin-top: 18px; }
+      .cta {
+        border: 1px solid transparent;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font-size: 14px;
+      }
+      .cta.primary {
+        background: linear-gradient(135deg, var(--c1), #44b7ff);
+        color: #041126;
+        font-weight: 700;
+      }
+      .cta.ghost {
+        border-color: var(--line);
+        color: var(--text);
+        background: rgba(16, 28, 58, 0.7);
+      }
+
+      .kpi-row {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+      .kpi {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px;
+        background: var(--panel);
+      }
+      .kpi .k { color: var(--muted); font-size: 12px; }
+      .kpi .v { margin-top: 4px; font-size: 22px; font-weight: 700; }
+
+      .section { margin-top: 18px; }
+      .section h2 { margin: 0 0 10px; font-size: 24px; }
+      .section p.lead { margin: 0; color: var(--muted); }
+
+      .grid-3 {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .feature {
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--panel);
+      }
+      .feature h3 { margin: 0; font-size: 16px; }
+      .feature p { margin: 8px 0 0; color: var(--muted); line-height: 1.55; font-size: 14px; }
+
+      .demo {
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+        background: rgba(12, 20, 45, 0.78);
+      }
+      .demo-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .badge {
+        display: inline-flex;
+        padding: 3px 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(77,255,191,0.45);
+        color: var(--ok);
+      }
+      .news {
+        margin-top: 10px;
+        border: 1px solid rgba(112,146,255,0.26);
+        border-radius: 10px;
+        padding: 10px;
+        background: rgba(17, 28, 58, 0.72);
+      }
+      .news h4 { margin: 0 0 6px; font-size: 15px; }
+      .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 6px; }
+      .tag {
+        font-size: 12px;
+        border-radius: 999px;
+        padding: 2px 8px;
+        border: 1px solid rgba(127,112,255,0.45);
+        background: rgba(127,112,255,0.14);
+      }
+      .line { margin: 6px 0; color: #d4e3ff; font-size: 14px; line-height: 1.55; }
+
+      .timeline {
+        margin-top: 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px;
+        background: var(--panel);
+      }
+      .timeline .item { margin: 8px 0; color: var(--muted); font-size: 14px; }
+
+      .footer-cta {
+        margin: 18px 0 8px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 16px;
+        background: linear-gradient(145deg, rgba(13,23,50,0.92), rgba(12,20,42,0.8));
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+      .footer-cta h3 { margin: 0; font-size: 20px; }
+      .footer-cta p { margin: 6px 0 0; color: var(--muted); }
+
+      @media (max-width: 980px) {
+        .kpi-row, .grid-3 { grid-template-columns: 1fr; }
+        .hero h1 { font-size: 30px; }
+        .footer-cta { flex-direction: column; align-items: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <nav class="nav">
+        <div class="brand"><span>AI</span> HotPulse</div>
+        <div class="links"><span>产品能力</span><span>效果示例</span><span>企业微信推送</span></div>
+        <div class="btn">预约演示</div>
+      </nav>
+
+      <section class="hero">
+        <h1>把碎片化 AI 新闻，变成团队每天都看得懂的 <span class="glow">热点简报</span></h1>
+        <p>系统每 3 小时自动抓取 RSS，解析、翻译、总结并推送到企业微信。每天只保留一份“当日最新版本”，让管理层和业务团队始终看到最新、可执行的 AI 机会点。</p>
+        <div class="hero-actions">
+          <button class="cta primary">申请试用</button>
+          <button class="cta ghost">查看产品演示</button>
+        </div>
+      </section>
+
+      <div class="kpi-row">
+        <div class="kpi"><div class="k">每日覆盖新闻</div><div class="v">1,500+</div></div>
+        <div class="kpi"><div class="k">推送频率</div><div class="v">3h</div></div>
+        <div class="kpi"><div class="k">当日简报</div><div class="v">1 份</div></div>
+        <div class="kpi"><div class="k">推送触达</div><div class="v">企业微信</div></div>
+      </div>
+
+      <section class="section">
+        <h2>为客户解决什么问题</h2>
+        <p class="lead">不是“资讯堆积”，而是“可落地 AI 机会识别”。</p>
+        <div class="grid-3">
+          <article class="feature">
+            <h3>信息过载</h3>
+            <p>自动汇聚多源 RSS，去重筛选后只留下高价值热点，减少无效阅读。</p>
+          </article>
+          <article class="feature">
+            <h3>阅读门槛高</h3>
+            <p>自动翻译与中文摘要，降低跨语言理解成本，非技术岗位也可快速掌握趋势。</p>
+          </article>
+          <article class="feature">
+            <h3>缺少业务映射</h3>
+            <p>每条热点自动推测适用应用领域，直接关联到可执行的业务场景。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>热点简报示例（对外展示）</h2>
+        <div class="demo">
+          <div class="demo-top">
+            <span>[2026-02-14] AI热点简报（当日最新）</span>
+            <span class="badge">已推送到企业微信群</span>
+          </div>
+
+          <article class="news">
+            <h4>Airbnb 将 AI 接入搜索与客服链路</h4>
+            <div class="tags">
+              <span class="tag">搜索与信息检索</span>
+              <span class="tag">智能客服与企业服务</span>
+              <span class="tag">AI基础设施与平台</span>
+            </div>
+            <p class="line"><b>简介（中文）：</b>Airbnb 正将大模型能力融入搜索发现和客服支持流程，重点提升查询命中率与服务响应效率。</p>
+            <p class="line"><b>影响解读：</b>适用应用领域：旅游平台搜索、客服自动化、运营分析。建议优先评估语义检索准确率与工单闭环效率。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>自动化运行机制</h2>
+        <div class="timeline">
+          <div class="item">1. 每 3 小时定时抓取 RSS 并执行解析/翻译/总结。</div>
+          <div class="item">2. 按自然日聚合：每天仅保留一份最新简报（持续覆盖更新）。</div>
+          <div class="item">3. 简报按日期倒序展示，最新日期始终在顶部。</div>
+          <div class="item">4. 自动推送企业微信，并记录失败重试日志。</div>
+        </div>
+      </section>
+
+      <section class="footer-cta">
+        <div>
+          <h3>把 AI 热点，从“看到”变成“用上”</h3>
+          <p>面向客户展示、团队对齐、管理决策，一套系统同时完成。</p>
+        </div>
+        <button class="cta primary">联系销售 / 获取演示</button>
+      </section>
+    </div>
+  </body>
+</html>

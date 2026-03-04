@@ -52,6 +52,153 @@ const renderEmptyState = (kind) => {
 
 const hasChinese = (text) => /[\u4e00-\u9fff]/.test(text || "");
 
+const DIRECTION_STOPWORDS = new Set([
+  "the",
+  "and",
+  "for",
+  "that",
+  "with",
+  "from",
+  "this",
+  "will",
+  "into",
+  "about",
+  "using",
+  "through",
+  "their",
+  "have",
+  "has",
+  "are",
+  "was",
+  "were",
+  "its",
+  "new",
+  "ai",
+  "llm",
+  "model",
+  "models",
+  "在",
+  "并",
+  "和",
+  "与",
+  "对",
+  "及",
+  "将",
+  "为",
+  "等",
+  "进行",
+  "通过",
+  "可以",
+  "相关",
+  "一个",
+  "该",
+  "这",
+  "更多",
+  "发布",
+  "更新",
+  "支持",
+]);
+
+const cleanDirectionText = (text) =>
+  String(text || "")
+    .replace(/https?:\/\/\S+/g, " ")
+    .replace(/[_*`>#-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const tokenizeDirectionWords = (text) => {
+  const lowered = cleanDirectionText(text).toLowerCase();
+  const tokens = lowered.match(/[a-z][a-z0-9+-]{2,}|[\u4e00-\u9fff]{2,}/g) || [];
+  return tokens.filter((token) => !DIRECTION_STOPWORDS.has(token));
+};
+
+const summarizeDirectionFocus = (text) => {
+  const normalized = cleanDirectionText(text);
+  if (!normalized) return "";
+
+  const sentences = normalized
+    .split(/[。！？!?；;\n]/)
+    .map((line) => line.trim())
+    .filter((line) => line.length >= 12);
+  if (!sentences.length) return normalized.slice(0, 42);
+
+  const frequencies = new Map();
+  for (const token of tokenizeDirectionWords(normalized)) {
+    frequencies.set(token, (frequencies.get(token) || 0) + 1);
+  }
+
+  let bestSentence = sentences[0];
+  let bestScore = -1;
+  for (const sentence of sentences) {
+    const uniqTokens = [...new Set(tokenizeDirectionWords(sentence))];
+    const tokenScore = uniqTokens.reduce((sum, token) => sum + (frequencies.get(token) || 0), 0);
+    const score = tokenScore + Math.min(sentence.length / 40, 1);
+    if (score > bestScore) {
+      bestScore = score;
+      bestSentence = sentence;
+    }
+  }
+
+  return bestSentence.length > 42 ? `${bestSentence.slice(0, 42).trim()}...` : bestSentence;
+};
+
+const normalizeCompareText = (text) =>
+  String(text || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fff]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const isTitleLikeText = (text, title) => {
+  const body = normalizeCompareText(text);
+  const heading = normalizeCompareText(title);
+  if (!body) return true;
+  if (!heading) return false;
+  if (body === heading) return true;
+  if (heading.length >= 18 && body.includes(heading)) return true;
+
+  const bodyTokens = new Set(body.split(" ").filter((token) => token.length >= 2));
+  const titleTokens = [...new Set(heading.split(" ").filter((token) => token.length >= 2))];
+  if (!titleTokens.length) return false;
+
+  const overlap = titleTokens.filter((token) => bodyTokens.has(token)).length;
+  const overlapRate = overlap / titleTokens.length;
+  const nearSameLength = body.length <= Math.max(heading.length * 1.6, 120);
+  if (overlapRate >= 0.8 && nearSameLength) return true;
+
+  const titlePrefix = titleTokens.slice(0, 6).join(" ");
+  if (titlePrefix && body.startsWith(titlePrefix) && body.length <= Math.max(heading.length * 1.8, 160)) return true;
+
+  const bodySentenceCount = body.split(/[.!?。！？;\n]/).filter((line) => line.trim().length > 0).length;
+  if (bodySentenceCount <= 2 && overlapRate >= 0.6 && body.length <= Math.max(heading.length * 2, 180)) return true;
+
+  return false;
+};
+
+const isUsableSummary = (summary, title) => {
+  const cleaned = String(summary || "").trim();
+  if (cleaned.length < 50) return false;
+  if (isTitleLikeText(cleaned, title)) return false;
+  const sentenceCount = cleaned.split(/[。！？!?;\n]/).filter((line) => line.trim().length >= 8).length;
+  return sentenceCount >= 2;
+};
+
+const getReasoningText = (item) => {
+  const candidates = [item.articleSummary, item.summary];
+  for (const candidate of candidates) {
+    const cleaned = String(candidate || "").trim();
+    if (!isUsableSummary(cleaned, item.title)) continue;
+    return cleaned;
+  }
+  return "";
+};
+
+const buildSynthesisDirection = (item) => {
+  const bodyFocus = summarizeDirectionFocus(getReasoningText(item));
+  const focus = (bodyFocus || "正文要点").replace(/[“”"]/g, "").trim();
+  return `围绕“${focus}”梳理可落地场景，优先验证短周期可见收益`;
+};
+
 const DIRECTION_RULES = [
   {
     keywords: ["search", "retrieval", "query", "检索", "搜索"],
@@ -93,16 +240,18 @@ const getLegacyZh = (item) => {
 };
 
 const inferExplorationDirections = (item) => {
-  const text = `${item.title || ""} ${item.summary || ""} ${item.introZh || ""} ${item.introEn || ""}`.toLowerCase();
+  const text = getReasoningText(item).toLowerCase();
   const directions = [];
+  directions.push(buildSynthesisDirection(item));
+
   for (const rule of DIRECTION_RULES) {
     if (rule.keywords.some((kw) => text.includes(kw.toLowerCase()))) {
       directions.push(rule.direction);
     }
   }
+
   if (directions.length === 0) {
-    const title = (item.title || "该主题").slice(0, 18);
-    directions.push(`围绕“${title}”设计业务试点并验证效果`);
+    directions.push("围绕该主题设计业务试点并验证效果");
   }
   return [...new Set(directions)].slice(0, 3);
 };
