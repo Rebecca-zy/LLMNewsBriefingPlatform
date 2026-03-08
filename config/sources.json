@@ -1,86 +1,93 @@
 [
   {
-    "name": "Google News - OpenAI",
+    "name": "OpenAI News",
     "type": "rss",
-    "url": "https://news.google.com/rss/search?q=OpenAI+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "url": "https://openai.com/news/rss.xml",
     "category": "模型发布",
     "priority": 1
   },
   {
-    "name": "Google News - Anthropic",
+    "name": "Qwen Blog",
     "type": "rss",
-    "url": "https://news.google.com/rss/search?q=Anthropic+Claude+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "url": "https://qwenlm.github.io/blog/index.xml",
     "category": "模型发布",
     "priority": 0.97
   },
   {
-    "name": "Google News - Gemini",
+    "name": "Microsoft Official Blog",
     "type": "rss",
-    "url": "https://news.google.com/rss/search?q=Google+Gemini+AI+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "url": "https://blogs.microsoft.com/?feed=rss2",
     "category": "模型发布",
+    "priority": 0.96
+  },
+  {
+    "name": "Google Blog",
+    "type": "rss",
+    "url": "https://blog.google/rss/",
+    "category": "产品更新",
     "priority": 0.95
   },
   {
-    "name": "Google News - AI Industry",
+    "name": "AWS Machine Learning Blog",
     "type": "rss",
-    "url": "https://news.google.com/rss/search?q=artificial+intelligence+industry+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "url": "https://aws.amazon.com/blogs/machine-learning/feed/",
+    "category": "产品更新",
+    "priority": 0.92
+  },
+  {
+    "name": "NVIDIA Newsroom - Generative AI",
+    "type": "rss",
+    "url": "https://nvidianews.nvidia.com/cats/generative_al.xml",
     "category": "行业动态",
     "priority": 0.9
   },
   {
-    "name": "Google News - AI Funding",
+    "name": "NVIDIA Technical Blog",
     "type": "rss",
-    "url": "https://news.google.com/rss/search?q=AI+startup+funding+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
-    "category": "行业动态",
-    "priority": 0.87
+    "url": "https://feeds.feedburner.com/nvidiablog",
+    "category": "基础设施",
+    "priority": 0.88
   },
   {
-    "name": "Google News - AWS AI",
+    "name": "Databricks Blog",
     "type": "rss",
-    "url": "https://news.google.com/rss/search?q=AWS+AI+Bedrock+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
-    "category": "产品更新",
+    "url": "https://docs.databricks.com/aws/en/feed.xml",
+    "category": "行业动态",
     "priority": 0.86
   },
   {
-    "name": "Google News - NVIDIA AI",
+    "name": "Elastic Blog",
     "type": "rss",
-    "url": "https://news.google.com/rss/search?q=NVIDIA+AI+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
-    "category": "行业动态",
+    "url": "https://www.elastic.co/blog/feed",
+    "category": "基础设施",
     "priority": 0.85
   },
   {
-    "name": "Google News - Microsoft AI",
+    "name": "Confluent Blog",
     "type": "rss",
-    "url": "https://news.google.com/rss/search?q=Microsoft+Copilot+AI+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "url": "https://www.confluent.io/rss.xml",
+    "category": "基础设施",
+    "priority": 0.84
+  },
+  {
+    "name": "arXiv cs.AI",
+    "type": "rss",
+    "url": "https://rss.arxiv.org/rss/cs.AI",
     "category": "模型发布",
-    "priority": 0.84
-  },
-  {
-    "name": "Google News - AI Product Updates",
-    "type": "rss",
-    "url": "https://news.google.com/rss/search?q=AI+product+launch+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
-    "category": "产品更新",
-    "priority": 0.84
-  },
-  {
-    "name": "Google News - Data & AI Platform",
-    "type": "rss",
-    "url": "https://news.google.com/rss/search?q=Databricks+Snowflake+AI+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
-    "category": "行业动态",
     "priority": 0.82
   },
   {
-    "name": "Google News - arXiv AI Papers",
+    "name": "arXiv cs.LG",
     "type": "rss",
-    "url": "https://news.google.com/rss/search?q=arXiv+AI+paper+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "url": "https://rss.arxiv.org/rss/cs.LG",
     "category": "模型发布",
-    "priority": 0.76
+    "priority": 0.8
   },
   {
-    "name": "Google News - NLP Papers",
+    "name": "arXiv cs.CL",
     "type": "rss",
-    "url": "https://news.google.com/rss/search?q=arXiv+NLP+LLM+when:1d&hl=en-US&gl=US&ceid=US:en&scoring=n",
+    "url": "https://rss.arxiv.org/rss/cs.CL",
     "category": "模型发布",
-    "priority": 0.74
+    "priority": 0.78
   }
 ]

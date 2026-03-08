@@ -183,11 +183,37 @@ const isUsableSummary = (summary, title) => {
   return sentenceCount >= 2;
 };
 
+const isUsableReasoningText = (text, title) => {
+  const cleaned = String(text || "").trim();
+  if (cleaned.length < 120) return false;
+  if (isTitleLikeText(cleaned, title)) return false;
+  const sentenceCount = cleaned.split(/[。！？!?;\n]/).filter((line) => line.trim().length >= 8).length;
+  return sentenceCount >= 3;
+};
+
+const cleanFeedDescription = (text, item = {}) => {
+  let cleaned = String(text || "").trim();
+  if (!cleaned) return "";
+
+  const isArxivItem =
+    /arxiv/i.test(item.sourceName || "") || /arxiv/i.test(item.link || "") || /arxiv/i.test(item.title || "");
+
+  if (isArxivItem) {
+    cleaned = cleaned
+      .replace(/^arxiv:\S+\s*/i, "")
+      .replace(/^(announce type|公告类型)[:：]\s*[^。；; ]+\s*/i, "")
+      .replace(/^(abstract|摘要)[:：]\s*/i, "")
+      .trim();
+  }
+
+  return cleaned;
+};
+
 const getReasoningText = (item) => {
-  const candidates = [item.articleSummary, item.summary];
+  const candidates = [item.articleReasoningSummary, item.summary];
   for (const candidate of candidates) {
-    const cleaned = String(candidate || "").trim();
-    if (!isUsableSummary(cleaned, item.title)) continue;
+    const cleaned = cleanFeedDescription(candidate, item);
+    if (!isUsableReasoningText(cleaned, item.title)) continue;
     return cleaned;
   }
   return "";
@@ -227,7 +253,7 @@ const DIRECTION_RULES = [
 ];
 
 const getLegacyZh = (item) => {
-  const base = item.summary || item.introEn || "";
+  const base = cleanFeedDescription(item.summary || item.introEn || "", item);
   if (!base) return "暂无中文简介。";
   const cleaned = String(base)
     .replace(
@@ -274,11 +300,27 @@ const normalizeImpactText = (text) => {
   return cleaned.replace(/^[：:;\s]+/, "");
 };
 
-const renderCategoryTag = (category) => {
+const formatPublishedLabel = (dateValue) => {
+  if (!dateValue) return "发布时间 未知";
+  const date = new Date(dateValue);
+  if (Number.isNaN(date.getTime())) return "发布时间 未知";
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  const hh = String(date.getHours()).padStart(2, "0");
+  const mm = String(date.getMinutes()).padStart(2, "0");
+  return `发布时间 ${y}-${m}-${d} ${hh}:${mm}`;
+};
+
+const renderCategoryTag = (category, sourceName, publishedAt) => {
   const categoryText = String(category || "").trim() || "信息资讯";
+  const sourceText = String(sourceName || "").trim() || "未知来源";
+  const publishedText = formatPublishedLabel(publishedAt);
   return `
     <div class="category-wrap">
       <span class="category-tag">${escapeHtml(categoryText)}</span>
+      <span class="source-tag">${escapeHtml(sourceText)}</span>
+      <span class="source-tag">${escapeHtml(publishedText)}</span>
     </div>
   `;
 };
@@ -302,6 +344,30 @@ const toLocalTime = (dateValue) => {
   const ss = String(date.getSeconds()).padStart(2, "0");
   return `${hh}:${mm}:${ss}`;
 };
+
+const isArxivItem = (item) =>
+  /arxiv/i.test(item?.sourceName || "") || /arxiv/i.test(item?.link || "") || /arxiv/i.test(item?.title || "");
+
+const getPublishedTimeValue = (item) => {
+  const raw = item?.publishedAt || item?.pubDate || "";
+  const time = new Date(raw).getTime();
+  return Number.isNaN(time) ? 0 : time;
+};
+
+const sortItemsForDisplay = (items) =>
+  items
+    .map((item, idx) => ({ item, idx }))
+    .sort((a, b) => {
+      const aRank = isArxivItem(a.item) ? 1 : 0;
+      const bRank = isArxivItem(b.item) ? 1 : 0;
+      if (aRank !== bRank) return aRank - bRank;
+      const timeDiff = getPublishedTimeValue(b.item) - getPublishedTimeValue(a.item);
+      if (timeDiff !== 0) return timeDiff;
+      return a.idx - b.idx;
+    })
+    .map((entry) => entry.item);
+
+const getDisplayItems = (briefing) => sortItemsForDisplay(Array.isArray(briefing?.items) ? briefing.items : []);
 
 const renderHistoryPicker = (versions, dateKey) => {
   const selected = versions.find((v) => v.id === currentBriefingId) || versions[0];
@@ -365,7 +431,9 @@ const renderBriefing = (briefing) => {
   metaUpdatedEl.textContent = `更新时间 ${generatedAt}`;
   trendTextEl.textContent = briefing.trend || "暂无趋势摘要";
 
-  const itemsHtml = (briefing.items || [])
+  const displayItems = getDisplayItems(briefing);
+
+  const itemsHtml = displayItems
     .map((item, idx) => {
       const introZh = getLegacyZh({ ...item, summary: item.introZh || item.summary });
       const directions =
@@ -379,13 +447,13 @@ const renderBriefing = (briefing) => {
         (item.impact.includes("综合评分") || item.impact.includes("方向高度相关") || item.impact.includes("适用应用领域"))
           ? buildImpactFromDirections(directions)
           : normalizeImpactText(item.impact) || buildImpactFromDirections(directions);
-      const categoryHtml = renderCategoryTag(item.category);
+      const categoryHtml = renderCategoryTag(item.category, item.sourceName, item.publishedAt || item.pubDate);
       return `
         <section class="news-item">
           <h3>${escapeHtml(item.title)}</h3>
           ${categoryHtml}
           <p><strong>简介：</strong>${escapeHtml(introZh)}<span class="intro-inline-link"><a href="${escapeHtml(
-            item.link
+            item.resolvedLink || item.link
           )}" target="_blank" rel="noopener noreferrer">查看原文</a></span></p>
           <p class="impact-note"><strong>可挖掘方向：</strong>${escapeHtml(impactText)}</p>
         </section>
@@ -493,11 +561,11 @@ const buildSummaryText = () => {
     return "";
   }
 
-  const lines = currentBriefing.items
+  const lines = getDisplayItems(currentBriefing)
     .map((item, idx) => {
-      const intro = item.introZh || item.summary || item.introEn || "";
+      const intro = getLegacyZh({ ...item, summary: item.introZh || item.summary });
       const oneLine = summarizeIntro(intro);
-      return oneLine ? `${idx + 1}. ${oneLine}` : "";
+      return oneLine ? `${idx + 1}. ${item.title}：${oneLine}` : "";
     })
     .filter(Boolean);
 
